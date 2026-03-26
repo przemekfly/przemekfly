@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background: transparent; user-select: none; font-family: 'Inter', sans-serif; color: #fff; overflow: hidden; margin: 0; padding: 0; }
+        .glass { background: rgba(8, 8, 8, 0.98); border: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9); }
+        .sidebar-btn { padding: 10px 14px; border-radius: 6px; transition: 0.2s; cursor: pointer; color: rgba(255,255,255,0.4); font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; }
+        .sidebar-btn:hover { color: #fff; background: rgba(255,255,255,0.03); }
+        .sidebar-btn.active { color: #000; background: #fff; box-shadow: 0 4px 10px rgba(255,255,255,0.1); }
+        .card { background: rgba(255, 255, 255, 0.015); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 8px; }
+        input { background: rgba(255,255,255,0.04) !important; border: 1px solid rgba(255,255,255,0.08) !important; color: #fff; outline: none; border-radius: 6px; transition: 0.2s; }
+        input:focus { border-color: rgba(255,255,255,0.3) !important; }
+        .btn-white { background: #fff; color: #000; font-weight: 800; font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; transition: 0.2s; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer;}
+        .btn-white:hover { opacity: 0.8; transform: scale(0.98); }
+        .btn-outline { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); font-weight: 800; font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; transition: 0.2s; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer;}
+        .btn-outline:hover { background: #fff; color: #000; }
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        #floating-progress {
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            will-change: transform, left, top;
+            display: none;
+            background: rgba(10, 10, 10, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        #app, #customer-shop { display: none; }
+    </style>
+</head>
+<body class="h-screen w-screen flex items-center justify-center">
+
+    <div id="floating-progress" class="absolute flex-col items-center justify-center p-4 rounded-xl z-50 transition-opacity duration-75" style="width: 220px;">
+        <div class="flex items-center gap-2 mb-1 w-full justify-center">
+            <div class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.8)]"></div>
+            <h3 class="text-[9px] font-black uppercase tracking-widest text-white/90">Unloading</h3>
+        </div>
+        <p class="text-[7px] opacity-40 uppercase font-bold tracking-[0.2em] mb-3" id="progress-time">Remaining: 10s</p>
+        <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <div id="progress-bar-fill" class="h-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)] transition-all duration-75" style="width: 0%;"></div>
+        </div>
+    </div>
+
+    <div id="app" class="glass w-[800px] h-[520px] overflow-hidden rounded-[16px]">
+        <div class="w-[180px] border-r border-white/5 flex flex-col p-6 bg-black/40">
+            <div class="mb-8">
+                <h1 class="text-[11px] font-black uppercase tracking-tight" id="store-name-side">Management</h1>
+                <p class="text-[7px] opacity-30 uppercase font-bold tracking-[0.2em] mt-0.5">Enterprise Studio</p>
+            </div>
+            <nav class="flex-1 space-y-2" id="nav-list"></nav>
+            <button onclick="closeUI()" class="mt-auto text-[8px] font-black uppercase tracking-widest text-white/20 hover:text-white transition py-2">Logout</button>
+        </div>
+        <div class="flex-1 flex flex-col relative">
+            <header class="h-[60px] px-8 flex items-center justify-between border-b border-white/5 absolute top-0 w-full z-20 bg-black/20 backdrop-blur-sm">
+                <h2 id="view-title" class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/50">Dashboard</h2>
+                <div class="flex items-center gap-2 px-3 py-1.5 rounded border border-white/10 bg-white/5">
+                    <div class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
+                    <span class="text-[7px] font-black uppercase tracking-widest opacity-60">System Active</span>
+                </div>
+            </header>
+            <div id="main-view" class="p-8 pt-[80px] overflow-y-auto flex-1 h-full"></div>
+        </div>
+    </div>
+
+    <div id="customer-shop" class="glass w-[850px] h-[500px] rounded-[16px] overflow-hidden">
+        <div class="flex-1 p-8 flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 id="shop-name-client" class="text-2xl font-black uppercase tracking-tighter">Shop Name</h1>
+                    <p class="text-[8px] uppercase tracking-[0.2em] opacity-30 mt-1">Product Offer</p>
+                </div>
+                <div onclick="closeUI()" class="flex items-center gap-2 cursor-pointer group bg-white/5 px-3 py-1.5 rounded-md hover:bg-white/10 transition">
+                    <span class="text-[8px] font-black uppercase tracking-widest opacity-50 group-hover:opacity-100">Close</span>
+                </div>
+            </div>
+            <div id="shop-items-grid" class="flex-1 grid grid-cols-3 gap-3 overflow-y-auto pr-2 pb-2 content-start"></div>
+        </div>
+        <div class="w-[260px] bg-black/20 border-l border-white/5 p-6 flex flex-col">
+            <h2 class="text-[10px] font-black uppercase tracking-widest mb-4 opacity-60">Your Cart</h2>
+            <div id="cart-items" class="flex-1 overflow-y-auto space-y-2 mb-4 pr-1"></div>
+            <div class="pt-4 border-t border-white/5">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-[8px] uppercase font-bold opacity-40 tracking-widest">Total:</span>
+                    <span id="cart-total" class="text-lg font-black">$0</span>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="checkout('cash')" class="btn-white flex-1 py-2 shadow-lg">Cash</button>
+                    <button onclick="checkout('bank')" class="btn-outline flex-1 py-2">Card</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let storeData = {};
+        let currentTab = 'dashboard';
+        let mainChart = null;
+        let cart = {};
+
+        window.addEventListener('message', function(event) {
+            const d = event.data;
+            if (d.action === "openBossMenu") {
+                document.getElementById('app').style.display = 'flex';
+                document.getElementById('customer-shop').style.display = 'none';
+                storeData = d;
+                document.getElementById('store-name-side').innerText = d.storeName;
+                setupBossViews();
+            } else if (d.action === "openWholesale") {
+                document.getElementById('app').style.display = 'flex';
+                document.getElementById('customer-shop').style.display = 'none';
+                storeData = { type: 'wholesale', items: d.items, store: d.store };
+                renderNav(['Catalog']);
+                switchTab('catalog');
+            } else if (d.action === "openCustomerShop") {
+                document.getElementById('app').style.display = 'none';
+                document.getElementById('customer-shop').style.display = 'flex';
+                setupCustomerShop(d);
+            } else if (d.action === "updateProgress") {
+                const el = document.getElementById('floating-progress');
+                if (d.show && d.onScreen) {
+                    el.style.display = 'flex';
+                    el.style.left = (d.x * 100) + '%';
+                    el.style.top = (d.y * 100) + '%';
+                    document.getElementById('progress-time').innerText = `Remaining: ${d.timeLeft}s`;
+                    document.getElementById('progress-bar-fill').style.width = (d.progress * 100) + '%';
+                } else {
+                    el.style.display = 'none';
+                }
+            }
+        });
+
+        function setupCustomerShop(d) {
+            storeData = d;
+            cart = {};
+            document.getElementById('shop-name-client').innerText = d.storeName;
+            const grid = document.getElementById('shop-items-grid');
+            grid.innerHTML = '';
+            
+            d.items.forEach(item => {
+                grid.innerHTML += `
+                    <div class="card p-3 flex flex-col hover:border-white/20 transition group">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="w-7 h-7 bg-white/5 rounded flex items-center justify-center text-xs grayscale group-hover:grayscale-0 transition">📦</div>
+                            <span class="font-black text-[11px]">$${item.price}</span>
+                        </div>
+                        <h4 class="font-bold text-[9px] uppercase tracking-tight">${item.label}</h4>
+                        <p class="text-[7px] opacity-40 uppercase font-bold mb-3 mt-0.5">Stock: ${item.count} pcs.</p>
+                        <div class="flex w-full gap-1 mt-auto">
+                            <input type="number" id="qty-${item.name}" value="1" min="1" max="${item.count}" class="w-10 text-center text-[9px] !py-1 !px-1">
+                            <button onclick="addToCart('${item.name}', '${item.label}', ${item.price}, ${item.count})" class="btn-white flex-1 !py-1 !text-[7px]">Add</button>
+                        </div>
+                    </div>
+                `;
+            });
+            renderCart();
+        }
+
+        function addToCart(name, label, price, maxStock) {
+            let qtyInput = document.getElementById('qty-' + name);
+            let qty = parseInt(qtyInput.value);
+            if(isNaN(qty) || qty <= 0) return;
+
+            let currentQty = cart[name] ? cart[name].quantity : 0;
+            if(currentQty + qty > maxStock) {
+                qty = maxStock - currentQty;
+                if(qty <= 0) return;
+            }
+
+            if(!cart[name]) cart[name] = { label: label, price: price, quantity: 0 };
+            cart[name].quantity += qty;
+            qtyInput.value = 1;
+            renderCart();
+        }
+
+        function removeFromCart(name) {
+            delete cart[name];
+            renderCart();
+        }
+
+        function renderCart() {
+            const cartDiv = document.getElementById('cart-items');
+            cartDiv.innerHTML = '';
+            let total = 0;
+
+            for(let key in cart) {
+                let item = cart[key];
+                total += item.price * item.quantity;
+                cartDiv.innerHTML += `
+                    <div class="flex justify-between items-center p-2 bg-white/[0.02] rounded border border-white/5 group">
+                        <div class="flex-1">
+                            <p class="text-[8px] font-bold uppercase tracking-tight">${item.label}</p>
+                            <p class="text-[7px] opacity-40 uppercase font-bold mt-0.5">${item.quantity}x $${item.price}</p>
+                        </div>
+                        <div class="text-right flex items-center gap-2">
+                            <p class="text-[9px] font-black">$${item.price * item.quantity}</p>
+                            <button onclick="removeFromCart('${key}')" class="text-[7px] text-red-500 opacity-0 group-hover:opacity-100 transition px-1.5 py-0.5 bg-red-500/10 rounded">X</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if(Object.keys(cart).length === 0) {
+                cartDiv.innerHTML = '<p class="text-[7px] uppercase tracking-widest opacity-20 text-center py-6">Cart is empty.</p>';
+            }
+
+            document.getElementById('cart-total').innerText = '$' + total.toLocaleString();
+        }
+
+        function checkout(method) {
+            let itemsToBuy = Object.keys(cart).map(k => ({ name: k, quantity: cart[k].quantity, price: cart[k].price }));
+            if(itemsToBuy.length === 0) return;
+
+            fetch(`https://${GetParentResourceName()}/checkoutCart`, {
+                method: 'POST',
+                body: JSON.stringify({ store: storeData.store, cart: itemsToBuy, method: method })
+            });
+            cart = {};
+            closeUI();
+        }
+
+        function renderNav(tabs) {
+            const nav = document.getElementById('nav-list'); nav.innerHTML = '';
+            tabs.forEach(tab => {
+                const low = tab.toLowerCase();
+                const btn = document.createElement('div');
+                btn.className = `sidebar-btn ${currentTab === low ? 'active' : ''}`;
+                btn.innerText = tab;
+                btn.onclick = () => switchTab(low);
+                nav.appendChild(btn);
+            });
+        }
+
+        function setupBossViews() {
+            renderNav(['Dashboard', 'Finance', 'Employees', 'Warehouse', 'Settings']);
+            switchTab('dashboard');
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('view-title').innerText = tab;
+            if (storeData.type !== 'wholesale') renderNav(['Dashboard', 'Finance', 'Employees', 'Warehouse', 'Settings']);
+            const view = document.getElementById('main-view'); view.innerHTML = ''; 
+
+            if (tab === 'dashboard') {
+                view.innerHTML = `
+                    <div class="grid grid-cols-2 gap-4 mb-4 h-[100px]">
+                        <div class="card p-5 border-white/10 flex flex-col justify-center">
+                            <p class="text-[7px] opacity-30 uppercase font-bold mb-1 tracking-widest">Available Funds</p>
+                            <h3 class="text-3xl font-black">$${storeData.balance.toLocaleString()}</h3>
+                        </div>
+                        <div class="card p-5 flex flex-col justify-center">
+                            <p class="text-[7px] opacity-30 uppercase font-bold mb-1 tracking-widest">Staff</p>
+                            <h3 class="text-3xl font-black">${storeData.employees.length}</h3>
+                        </div>
+                    </div>
+                    <div class="card p-5 h-[190px] flex flex-col relative overflow-hidden">
+                        <p class="text-[7px] opacity-30 uppercase font-bold mb-2 tracking-widest relative z-10">Products Sold (7D)</p>
+                        <div class="flex-1 relative z-10"><canvas id="incomeChart"></canvas></div>
+                    </div>
+                `;
+                setTimeout(() => initChart(storeData.salesData), 100);
+            } else if (tab === 'finance') {
+                view.innerHTML = `
+                    <div class="flex items-center justify-center w-full h-full pb-4">
+                        <div class="card p-8 w-full max-w-sm relative overflow-hidden border border-white/10 shadow-2xl">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                            
+                            <div class="text-center mb-6 mt-2">
+                                <p class="text-[7px] opacity-30 uppercase font-bold tracking-[0.3em] mb-1">Current Balance</p>
+                                <h3 class="text-4xl font-black">$${storeData.balance.toLocaleString()}</h3>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div class="relative w-full">
+                                    <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/30 font-black text-sm">$</div>
+                                    <input type="number" id="fin-amount" placeholder="0" class="w-full text-center py-3.5 text-lg font-black tracking-widest pl-8">
+                                </div>
+                                
+                                <div class="grid grid-cols-4 gap-2">
+                                    <button onclick="document.getElementById('fin-amount').value = 100" class="btn-outline !py-1.5 !text-[7px] opacity-50 hover:opacity-100 hover:bg-white/10 hover:text-white !border-white/10">+$100</button>
+                                    <button onclick="document.getElementById('fin-amount').value = 1000" class="btn-outline !py-1.5 !text-[7px] opacity-50 hover:opacity-100 hover:bg-white/10 hover:text-white !border-white/10">+$1k</button>
+                                    <button onclick="document.getElementById('fin-amount').value = 5000" class="btn-outline !py-1.5 !text-[7px] opacity-50 hover:opacity-100 hover:bg-white/10 hover:text-white !border-white/10">+$5k</button>
+                                    <button onclick="document.getElementById('fin-amount').value = ${storeData.balance}" class="btn-outline !py-1.5 !text-[7px] opacity-50 hover:opacity-100 hover:bg-white/10 hover:text-white !border-white/10">MAX</button>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-3 pt-4">
+                                    <button onclick="finance('deposit')" class="btn-white py-3 shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]">Deposit</button>
+                                    <button onclick="finance('withdraw')" class="btn-outline py-3 !border-white/20 hover:!bg-white hover:!text-black">Withdraw</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (tab === 'employees') {
+                let html = '<div class="grid grid-cols-2 gap-3">';
+                storeData.employees.forEach(e => {
+                    html += `
+                        <div class="card p-4 flex flex-col">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <span class="text-[10px] font-bold uppercase block">${e.name}</span>
+                                    <span class="text-[7px] opacity-30 uppercase font-bold tracking-widest mt-0.5 block">${e.grade}</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 mt-auto items-end">
+                                <button onclick="empAction('promote', '${e.id}')" class="btn-outline !text-[6px] !py-2 opacity-70 hover:opacity-100 h-full">Promote</button>
+                                <div class="flex flex-col gap-1">
+                                    <input type="number" id="bonus-${e.id}" placeholder="$" class="w-full text-center text-[8px] py-1 bg-white/5 border border-white/10 rounded outline-none focus:border-white/30">
+                                    <button onclick="payBonus('${e.id}')" class="btn-outline !text-[6px] !py-1 opacity-70 hover:opacity-100">Give</button>
+                                </div>
+                                <button onclick="empAction('fire', '${e.id}')" class="btn-white !bg-red-500/10 !text-red-500 !border !border-red-500/20 hover:!bg-red-500 hover:!text-white !text-[6px] !py-2 h-full">Fire</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                view.innerHTML = html + '</div>';
+                if(storeData.employees.length === 0) view.innerHTML = '<p class="text-center opacity-20 py-20 uppercase text-[8px] tracking-widest">No staff</p>';
+            } else if (tab === 'warehouse') {
+                let html = '<div class="grid grid-cols-2 gap-3">';
+                storeData.stock.forEach(i => {
+                    html += `<div class="card p-4 flex justify-between items-center"><div><p class="text-[9px] font-bold uppercase">${i.label}</p><p class="text-[6px] opacity-30 uppercase font-bold mt-0.5 tracking-widest">ID: ${i.name}</p></div><span class="text-lg font-black opacity-40">${i.count}x</span></div>`;
+                });
+                view.innerHTML = html + '</div>';
+                if(storeData.stock.length === 0) view.innerHTML = '<p class="text-center opacity-20 py-20 uppercase text-[8px] tracking-widest">Warehouse empty</p>';
+            } else if (tab === 'settings') {
+                view.innerHTML = `
+                    <div class="card p-8 max-w-sm mx-auto space-y-5 mt-2">
+                        <div><p class="text-[7px] opacity-40 uppercase mb-2 font-bold tracking-widest">Trade Name</p><input id="set-name" type="text" value="${storeData.storeName}" class="w-full py-2.5 px-3"></div>
+                        <div><p class="text-[7px] opacity-40 uppercase mb-2 font-bold tracking-widest">Discord Webhook</p><input id="set-webhook" type="text" value="${storeData.status.webhook}" class="w-full py-2.5 px-3" placeholder="https://..."></div>
+                        <div class="flex items-center justify-between py-2"><p class="text-[7px] opacity-40 uppercase font-bold tracking-widest">Suspend sales (Closed)</p><input type="checkbox" id="set-closed" ${storeData.status.closed ? 'checked' : ''} class="w-4 h-4 accent-white"></div>
+                        <button onclick="saveSettings()" class="btn-white w-full py-3 shadow-lg">Save Changes</button>
+                    </div>
+                `;
+            } else if (tab === 'catalog') {
+                let html = '<div class="grid grid-cols-4 gap-3">';
+                storeData.items.forEach(item => {
+                    html += `
+                        <div class="card p-4 flex flex-col items-center hover:border-white/20 transition group">
+                            <div class="w-8 h-8 bg-white/5 rounded-md flex items-center justify-center text-sm mb-3 grayscale group-hover:grayscale-0 transition">📦</div>
+                            <h4 class="font-bold text-[8px] uppercase mb-0.5 tracking-tight text-center">${item.label}</h4>
+                            <p class="text-[6px] opacity-30 uppercase font-bold mb-3 tracking-widest">${item.amount} pieces</p>
+                            <button onclick="buyWholesale('${item.name}')" class="btn-white w-full py-2 !text-[7px]">$${item.price * item.amount}</button>
+                        </div>
+                    `;
+                });
+                view.innerHTML = html + '</div>';
+            }
+        }
+
+        function initChart(data) {
+            const ctx = document.getElementById('incomeChart').getContext('2d');
+            if (mainChart) mainChart.destroy();
+            
+            let gradient = ctx.createLinearGradient(0, 0, 0, 150);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
+            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+            mainChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
+                    datasets: [{
+                        data: data,
+                        borderColor: '#fff',
+                        backgroundColor: gradient,
+                        fill: true,
+                        borderWidth: 2,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 4
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { display: true, grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.2)', font: { size: 8 } } },
+                        y: { display: false, min: 0 }
+                    },
+                    interaction: { mode: 'index', intersect: false },
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function finance(type) {
+            const amount = parseInt(document.getElementById('fin-amount').value);
+            if (!amount || amount <= 0) return;
+            fetch(`https://${GetParentResourceName()}/bossInteract`, { method: 'POST', body: JSON.stringify({ action: type, amount, store: storeData.store }) });
+            closeUI();
+        }
+
+        function empAction(action, id) {
+            fetch(`https://${GetParentResourceName()}/bossInteract`, { method: 'POST', body: JSON.stringify({ action: action, targetId: id, store: storeData.store }) });
+            closeUI();
+        }
+
+        function payBonus(id) {
+            let input = document.getElementById('bonus-' + id);
+            if (!input) return;
+            let amount = parseInt(input.value);
+            if (isNaN(amount) || amount <= 0) return;
+            fetch(`https://${GetParentResourceName()}/bossInteract`, { method: 'POST', body: JSON.stringify({ action: 'pay_bonus', targetId: id, amount: amount, store: storeData.store }) });
+            closeUI();
+        }
+
+        function saveSettings() {
+            const name = document.getElementById('set-name').value;
+            const closed = document.getElementById('set-closed').checked;
+            const webhook = document.getElementById('set-webhook').value;
+            fetch(`https://${GetParentResourceName()}/bossInteract`, { method: 'POST', body: JSON.stringify({ action: 'settings', name, closed, webhook, store: storeData.store }) });
+            closeUI();
+        }
+
+        function buyWholesale(name) {
+            const item = storeData.items.find(i => i.name === name);
+            fetch(`https://${GetParentResourceName()}/buyWholesale`, { method: 'POST', body: JSON.stringify({ items: [item], store: storeData.store }) });
+            closeUI();
+        }
+
+        function closeUI() {
+            document.getElementById('app').style.display = 'none';
+            document.getElementById('customer-shop').style.display = 'none';
+            fetch(`https://${GetParentResourceName()}/closeUI`, { method: 'POST' });
+        }
+
+        window.onkeydown = (e) => { if (e.key === 'Escape') closeUI(); };
+    </script>
+</body>
+</html>
