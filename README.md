@@ -1,8 +1,8 @@
-Code made by https://github.com/przemekfly
+Code made by **https://github.com/przemekfly**
 
 Do not sell this code!!!! or i will find you
 
-DISCORD SERVER:
+**DISCORD SERVER:**
 
        https://discord.gg/YjVHMJ6BMw
 
