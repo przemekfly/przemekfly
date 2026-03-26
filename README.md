@@ -1,16 +1,30 @@
-## Hi there 👋
+# Cześć, tu [Twoje Imię]! 👋
 
-<!--
-**przemekfly/przemekfly** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+### 🚀 O mnie
+Jestem pasjonatem programowania z orientacją na **[Twoja specjalizacja, np. Python / Web Design]**. 
+Obecnie pracuję nad **[Twój główny projekt]** i uczę się **[Czego się uczysz]**.
 
-Here are some ideas to get you started:
+* 🌍 Mieszkam w: **[Twoje Miasto]**
+* 📧 Kontakt: **[Twój Email]**
+* 💼 LinkedIn: **[Link do profilu]**
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+---
+
+### 🛠 Technologie i Narzędzia
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=js,html,css,react,nodejs,git,python,figma" />
+</p>
+
+---
+
+### 📊 Moje Statystyki
+<p align="center">
+  <img height="180em" src="https://github-readme-stats.vercel.app/api?username=[TWOJ_LOGIN]&show_icons=true&theme=radical&include_all_commits=true&count_private=true"/>
+  <img height="180em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=[TWOJ_LOGIN]&layout=compact&theme=radical"/>
+</p>
+
+---
+
+### ✍️ Ostatnie projekty
+- [Projekt 1](link) - Krótki opis co to robi.
+- [Projekt 2](link) - Czego użyłeś (np. React + FastAPI).
