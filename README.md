@@ -16,7 +16,7 @@ If u want to pay me for code your script text me on discord!
 
 
 SQL PROMPT
-
+```
 CREATE TABLE IF NOT EXISTS `custom_shops` (
     `store_id` varchar(50) NOT NULL,
     `settings` longtext DEFAULT NULL,
@@ -37,3 +37,4 @@ INSERT INTO `addon_account` (`name`, `label`, `shared`) VALUES
 
 INSERT INTO `addon_inventory` (`name`, `label`, `shared`) VALUES
 ('society_shop1', 'Center Shop', 1);
+```
