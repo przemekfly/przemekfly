@@ -2,8 +2,8 @@ Code made by https://github.com/przemekfly
 
 Do not sell this code!!!! or i will find you
 
-    DISCORD SERVER:
-https://discord.gg/YjVHMJ6BMw
+DISCORD SERVER:
+      https://discord.gg/YjVHMJ6BMw
 
 If u want to pay me for code your script text me on discord!
 
