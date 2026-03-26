@@ -9,7 +9,7 @@ Do not sell this code!!!! or i will find you
 If u want to pay me for code your script text me on discord!
 
 
-### 🛠 Technologie i Narzędzia
+###  Languages
 <p align="left">
   <img src="https://skillicons.dev/icons?i=js,html,css,react,nodejs,lua,python,vua" />
 </p>
