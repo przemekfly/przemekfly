@@ -10,5 +10,5 @@ If u want to pay me for code your script text me on discord!
 
 ### 🛠 Technologie i Narzędzia
 <p align="left">
-  <img src="https://skillicons.dev/icons?i=js,html,css,react,nodejs,git,python,figma" />
+  <img src="https://skillicons.dev/icons?i=js,html,css,react,nodejs,lua,python,vua" />
 </p>
