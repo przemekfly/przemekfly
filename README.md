@@ -42,6 +42,14 @@
 
 ---
 
+### 🌟 Wyróżnione Projekty (Portfolio)
+
+#### [🛒 E-Commerce & Digital Store REST API](https://github.com/przemekfly/ecommerce-rest-api)
+> **Stack:** Node.js, TypeScript, Express, Prisma ORM, JWT, Stripe, Swagger / OpenAPI, Docker  
+> Produkcyjny backend dla sklepu internetowego i platformy zamówień. Zawiera pełną autoryzację JWT z podziałem na role (`USER`, `ADMIN`), zarządzanie katalogiem i stanami magazynowymi, transakcyjne składanie zamówień (`Prisma $transaction`), symulację płatności i webhooków oraz interaktywną dokumentację **Swagger UI** pod `/docs`.
+
+---
+
 ### 🤝 Dlaczego warto ze mną współpracować?
 
 - **Interaktywna dokumentacja API** – Do każdego projektu dołączam Swagger UI lub kolekcję Postmana, dzięki czemu Twój frontend developer (lub Ty) przetestuje każdy endpoint jednym kliknięciem.
