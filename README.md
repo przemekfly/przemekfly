@@ -27,6 +27,13 @@ Backend sklepu internetowego w Node.js, TypeScript i Prisma.
 - Integracja sesji płatności (Stripe) i webhooków.
 - Dokumentacja Swagger UI pod `/docs`.
 
+#### [Web Scraper & Data Pipeline](https://github.com/przemekfly/web-scraper-pipeline)
+Asynchroniczny system web scrapingu i ekstrakcji danych w Pythonie (FastAPI, BeautifulSoup, Pandas).
+- Asynchroniczne pobieranie danych z obsługą błędów i rotacją nagłówków.
+- Walidacja danych przez Pydantic i deduplikacja ofert w bazie SQLite / PostgreSQL.
+- Eksport danych bezpośrednio do arkuszy Excel (.xlsx) oraz CSV.
+- Interfejs REST API z dokumentacją Swagger oraz tryb CLI pod harmonogram zadań.
+
 ---
 
 ### Kontakt
